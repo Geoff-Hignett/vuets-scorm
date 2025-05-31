@@ -1,0 +1,44 @@
+{
+    "language": {
+        "isocode": "fr-FR",
+        "friendlyname": "French",
+        "langID": 2,
+        "routes": [
+            {
+                "url": "/",
+                "title": "Introduction",
+                "pageID": 0,
+                "section": 0,
+                "fields": [
+                    { "key": "s1_h1", "Text": "Commencer", "ImageURL": "" },
+                    { "key": "s1_p1", "Text": "Bienvenue au cours!", "ImageURL": "" },
+                    { "key": "s1_b1", "Text": "Commencer la section 1", "ImageURL": "" }
+                ]
+            },
+            {
+                "url": "/section1",
+                "title": "Section 1",
+                "pageID": 1,
+                "section": 0,
+                "fields": [
+                    { "key": "s1_h1", "Text": "Section 1", "ImageURL": "" },
+                    { "key": "s1_p1", "Text": "Il s'agit de la section 1. Cliquez sur l'un des boutons ci-dessous.", "ImageURL": "" },
+                    { "key": "s1_b1", "Text": "Résumé de la visite", "ImageURL": "" },
+                    { "key": "s1_b2", "Text": "Retour à Commencer", "ImageURL": "" }
+                ]
+            },
+            {
+                "url": "/summary",
+                "title": "Résumé",
+                "pageID": 2,
+                "section": 0,
+                "fields": [
+                    { "key": "s1_h1", "Text": "Bien joué!", "ImageURL": "" },
+                    { "key": "s1_p1", "Text": "Vous avez terminé le cours.", "ImageURL": "" },
+                    { "key": "s1_b1", "Text": "Retour à la section 1", "ImageURL": "" },
+                    { "key": "s1_b2", "Text": "Retour à Commencer", "ImageURL": "" }
+                ]
+            }
+        ]
+    }
+}
