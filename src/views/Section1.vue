@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import { useLangStore } from "@/stores/lang";
+import { useLangStore } from "@/stores/uesLang";
 
 const langStore = useLangStore();
 </script>
