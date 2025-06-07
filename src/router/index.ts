@@ -10,7 +10,7 @@ const routes = [
 ];
 
 const router = createRouter({
-    history: createWebHashHistory(), // <-- Hash mode like <HashRouter> in React
+    history: createWebHashHistory(),
     routes,
 });
 
