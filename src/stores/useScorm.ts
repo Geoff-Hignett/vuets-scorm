@@ -24,17 +24,17 @@ export const useScormStore = defineStore("scorm", {
         suspendData: "",
         interactions: [
             {
-                interactionID: "1",
+                interactionID: "0",
                 questionRef: "q1",
                 questionText: "What is 2 + 2?",
-                questionType: "numeric",
+                questionType: "fill-in",
                 learnerResponse: "",
                 correctAnswer: "4",
                 wasCorrect: null,
                 objectiveId: "obj1",
             },
             {
-                interactionID: "2",
+                interactionID: "1",
                 questionRef: "q2",
                 questionText: "Pick a fruit",
                 questionType: "choice",
@@ -44,7 +44,7 @@ export const useScormStore = defineStore("scorm", {
                     { option: "Orange", key: "3" },
                 ],
                 learnerResponse: "",
-                correctAnswer: "Banana",
+                correctAnswer: "2",
                 wasCorrect: null,
                 objectiveId: "obj2",
             },
@@ -92,19 +92,14 @@ export const useScormStore = defineStore("scorm", {
             return parseInt(loc);
         },
 
-        scormGetSuspendData(): object | false {
+        scormGetSuspendData(): string | false {
             let suspendData = "";
             if (this.scormAPIConnected) {
                 suspendData = this.API.get("cmi.suspend_data");
+                console.log(suspendData);
+                return suspendData;
             } else {
-                suspendData = sessionStorage.getItem("suspend_data") ?? "{}";
-            }
-            suspendData = suspendData.replace(/[~]/g, '"').replace(/[|]/g, ",").replace(/[¬]/g, "'");
-            if (!suspendData) return false;
-            try {
-                return JSON.parse(suspendData);
-            } catch (e) {
-                console.error(e);
+                console.log("scorm not connected");
                 return false;
             }
         },
@@ -193,12 +188,13 @@ export const useScormStore = defineStore("scorm", {
                 } else {
                     this.API.set("cmi.completion_status", "completed");
                 }
+                this.API.commit();
             } else {
                 this.scormlogNotConnected();
             }
         },
 
-        scormSetLocation(location: number, suspendData: object | null = null) {
+        scormSetLocation(location: number) {
             this.reconnectAttemptIfNeeded();
             if (this.scormAPIConnected) {
                 if (this.version === "1.2") {
@@ -206,13 +202,10 @@ export const useScormStore = defineStore("scorm", {
                 } else {
                     this.API.set("cmi.location", location.toString());
                 }
+                this.API.commit();
             } else {
-                sessionStorage.setItem("bookmark", location.toString());
+                console.log("scorm not connected cant set location");
             }
-            this.location = location;
-            if (suspendData) this.scormSetSuspendData(suspendData);
-            sessionStorage.setItem("bookmark_location", location.toString());
-            this.API.commit();
         },
 
         scormSetScore(score: number) {
@@ -228,6 +221,7 @@ export const useScormStore = defineStore("scorm", {
                     this.API.set("cmi.score.max", "100");
                     this.API.set("cmi.score.raw", score.toString());
                 }
+                this.API.commit();
             }
         },
 
@@ -280,7 +274,6 @@ export const useScormStore = defineStore("scorm", {
 
         recordScormQuestion(
             questionRef: string,
-            // questionText: string,
             questionType: string,
             learnerResponse: string,
             correctAnswer: string,
@@ -293,16 +286,15 @@ export const useScormStore = defineStore("scorm", {
                 return;
             }
 
-            const base = this.version === "1.2" ? "cmi.interactions" : "cmi.interactions";
+            const index = interactionID;
 
-            const index = interactionID; // In real SCORM, you'd track how many interactions have been set so far
-
-            this.API.set(`${base}.${index}.id`, questionRef);
-            this.API.set(`${base}.${index}.type`, questionType);
-            this.API.set(`${base}.${index}.learner_response`, learnerResponse);
-            this.API.set(`${base}.${index}.correct_responses.0.pattern`, correctAnswer);
-            this.API.set(`${base}.${index}.result`, wasCorrect ? "correct" : "incorrect");
-            this.API.set(`${base}.${index}.objectives.0.id`, objectiveId);
+            this.API.set(`cmi.interactions.${index}.id`, questionRef);
+            this.API.set(`cmi.interactions.${index}.type`, questionType);
+            this.API.set(`cmi.interactions.${index}.timestamp`, new Date().toISOString()); // some LMSs need a timestamp
+            this.API.set(`cmi.interactions.${index}.learner_response`, learnerResponse);
+            this.API.set(`cmi.interactions.${index}.correct_responses.0.pattern`, correctAnswer);
+            this.API.set(`cmi.interactions.${index}.result`, wasCorrect ? "correct" : "incorrect");
+            this.API.set(`cmi.interactions.${index}.objectives.0.id`, objectiveId);
 
             this.API.commit();
             console.log(`Interaction ${index} sent to LMS`);

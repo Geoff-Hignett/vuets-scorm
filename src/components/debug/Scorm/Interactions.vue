@@ -57,14 +57,18 @@ const scormInteractions = computed(() => scormStore.interactions);
 const submitNumeric = () => {
     scormStore.setInteraction({
         interaction: 0,
-        learnerResponse: numericAnswer.value,
+        learnerResponse: numericAnswer.value.toString(),
     });
 };
 
 const submitChoice = () => {
+    const selectedOption = scormInteractions.value[1]?.questionOptions?.find((option) => option.option === choiceAnswer.value);
+
+    const responseKey = selectedOption?.key ?? "";
+
     scormStore.setInteraction({
         interaction: 1,
-        learnerResponse: choiceAnswer.value,
+        learnerResponse: responseKey,
     });
 };
 
